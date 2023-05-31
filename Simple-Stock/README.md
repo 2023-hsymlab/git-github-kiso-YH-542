@@ -15,6 +15,15 @@ Use Google Colaboratory: Simple StockData scraping from stooq.com - SoftBank
 * 変動グラフ
 * 上昇している株と株と下降している株をランキングで表示
 
+## ゼミ
+* マーケティング情報の配信
+* ランキング
+* テクニカル指標のグラフ
+* 株価アラート
+* データのバックアップ機能
+* ポートフォリオ
+
+
 
 
 
