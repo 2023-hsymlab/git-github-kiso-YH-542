@@ -8,7 +8,7 @@ import numpy as np
 import time
 import matplotlib.pyplot as plt
 import matplotlib.style as style
-import asyncio
+
 
 ### 保有している株の状況をグラフや表で表示するページ
 #タイトル表示

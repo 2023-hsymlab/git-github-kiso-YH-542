@@ -4,14 +4,24 @@ import time
 
 # config
 # 詳細:https://data-analytics.fun/2022/07/10/streamlit-theme-page-settings/
+
+## ページの詳細情報の部分
 st.set_page_config(
     page_title="Streamlit テンプレート",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
+## init等で使われているsession_stateの変数
+# st.session_state.init
+# st.session_state.now_tab
+# st.session_state.tab
+# st.session_state.layer
+# st.session_state.count
+
 # init
 def init():
+    #sessionの状態を初期化
     if "init" not in st.session_state:
         st.session_state.init=True
         reset_session()

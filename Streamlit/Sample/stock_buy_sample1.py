@@ -25,8 +25,6 @@ def buy_kb(code, buy_days):
     startdate = enddate + dt.timedelta(days=-3)
     stock_code = str(code) + '.JP'
     df = data.DataReader(stock_code,'stooq', startdate, enddate)
-    if df.empty:
-        return None
     buy_kb_Close = df['Close']
     return buy_kb_Close[0]
 
@@ -276,7 +274,7 @@ if st.session_state['increment'] == 1 and info_situation == '買':
         with col1:
             yes_button = st.button('はい')
             if yes_button:
-                cal_kb_update(stock_code, stock_name, stock_amount, day_info)
+                cal_kb(stock_code, stock_name, stock_amount, day_info)
                 with st.spinner():
                     time.sleep(3)
                     st.write('購入しました!')
@@ -292,8 +290,7 @@ if st.session_state['increment'] == 1 and info_situation == '買':
 #     st.write('購入しました!')
 
 ###売る場合
-## 保有株数を全部売却する関数
-def all_sell_stock(code, code_name, purchase_num):
+def sell_stock(code, code_name, purchase_num):
     connection = None
     passwordy = '507560yosshi'
     
@@ -366,80 +363,17 @@ def all_sell_stock(code, code_name, purchase_num):
         if connection is not None and connection.is_connected():
             connection.close()
 
-## 保有株数を一部売却する関数
-# 売却関数
-def sell_stock(code, code_name, sell_num, trade_day):
-    connection = None
-    passwordy = '507560yosshi'
-    check = 0
-
-    try:
-        connection = mysql.connector.connect(
-            host='localhost',
-            user='yosshy',
-            password=passwordy,
-            database='stocks_situation'
-        )
-
-        cursor = connection.cursor()
-
-        # 株式を持っているかチェックするクエリ
-        check_sql = ('''
-        SELECT COUNT(*) FROM transactions WHERE stock_code = %s
-        ''')
-
-        # 株式を売却するクエリ
-        sell_sql = ('''
-            UPDATE transactions
-            SET trade_day = %s, amount = amount - %s
-            WHERE stock_code = %s
-        ''')
-
-        # 株式を持っていない場合はエラーメッセージを表示
-        cursor.execute(check_sql, (code,))
-        result = cursor.fetchone()
-
-        if result[0] == 0:
-            print('売却する株式が存在しません。')
-        else:
-            # 株数が保有数を超える場合はエラーメッセージを表示
-            cursor.execute('SELECT amount FROM transactions WHERE stock_code = %s', (code,))
-            current_amount = cursor.fetchone()[0]
-            if sell_num > current_amount:
-                check = 0
-            elif sell_num == current_amount:
-                all_sell_stock(code, code_name, sell_num)
-                check = 1
-            else:
-                cursor.execute(sell_sql, (trade_day, sell_num, code))
-                connection.commit()
-                check = 2
-
-        cursor.close()
-        return check
-    except Error as err:
-        print(f"Error: {err}")
-    
-    finally:
-        if connection is not None and connection.is_connected():
-            connection.close()
-
-
-
 # 売る場合
 if st.session_state['increment'] == 1 and info_situation == '売':
         col1, col2 = st.columns(2)
         with col1:
             yes_button = st.button('はい')
             if yes_button:
-                stock_judge = sell_stock(stock_code, stock_name, stock_amount, day_info)
+                sell_stock(stock_code, stock_name, stock_amount)
                 with st.spinner():
                     time.sleep(3)
+                    st.write('売却しました!')
                     st.session_state['increment'] = 0
-                    if stock_judge == 0:
-                        st.write('売却する株数が保有数を超えています')
-                    else:
-                        st.write('売却しました')
         with col2:
             no_button = st.button('いいえ')
             if no_button:
